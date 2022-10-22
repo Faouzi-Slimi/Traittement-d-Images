@@ -1,0 +1,79 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2 # as cv
+from skimage import data, img_as_float
+from skimage.util import random_noise
+from skimage.metrics import peak_signal_noise_ratio
+#img0=cv2.imread('C:/Users/MSI/Desktop/fawdha/DL/images2021/hoffman.bmp')[30:150,30:150]
+img0= img_as_float(data.coffee())[30:180, 150:300]
+img0 = np.uint8(255*img0)
+# img0 = cv2.imread('c:\\images2021\\melan.jpg')[30:150, 30:150]
+# img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2RGB)
+img=random_noise(img0, mode='s&p')
+img=np.uint8(255*img0)
+
+plt.figure()
+plt.subplot(221)
+plt.imshow(img0,cmap='gray')
+plt.subplot(223)
+plt.imshow(img,cmap='gray')
+
+plt.subplot(222)
+plt.hist(img0.ravel(), bins=256, range=(0.0, 255), fc='b', ec='k')
+plt.ylabel('Number of Occurrences')
+plt.xlabel('Brightness')
+plt.grid()
+
+plt.subplot(224)
+plt.hist(img.ravel(), bins=256, range=(0.0, 255), fc='b', ec='k')
+plt.ylabel('Number of Occurrences')
+plt.xlabel('Brightness')
+plt.grid()
+
+##2D convo(image filtering)
+
+kernel=np.ones((5,5))/25
+blur=cv2.filter2D(img, -1, kernel)
+plt.figure()
+plt.subplot(121),plt.imshow(img,cmap='gray'),plt.title('Original+ bruit')
+plt.xticks([]), plt.yticks([])
+plt.subplot(122),plt.imshow(blur,cmap='gray'),plt.title('Averaging')
+plt.xticks([]), plt.yticks([])
+plt.show()
+
+##Averging
+'''
+blur1=cv2.blur(img,(3,3))
+blur2=cv2.blur(img, (5,5))
+blur3=cv2.blur(img,(7,7))
+'''
+##Filtre gaussian
+'''
+blur1=cv2.GaussianBlur(img,(5,5),0)
+blur2=cv2.GaussianBlur(img, (5,5),0.5)
+blur3=cv2.GaussianBlur(img,(5,5),0.9)
+'''
+#filtre median
+blur1=cv2.medianBlur(img,3)
+blur2=cv2.medianBlur(img, 5)
+blur3=cv2.medianBlur(img,7)
+
+plt.figure()
+plt.subplot(231),plt.imshow(img0),plt.title('Original')
+plt.xticks([]), plt.yticks([])
+plt.subplot(232),plt.imshow(img),plt.title('bruite')
+plt.xticks([]), plt.yticks([])
+plt.subplot(234),plt.imshow(blur1),plt.title('3*3')
+plt.xticks([]), plt.yticks([])
+plt.subplot(235),plt.imshow(blur2),plt.title('5*5')
+plt.xticks([]), plt.yticks([])
+plt.subplot(236),plt.imshow(blur3),plt.title('7*7')
+plt.xticks([]), plt.yticks([])
+plt.show()
+
+psnr1 = peak_signal_noise_ratio(img0, blur1)
+print(psnr1)
+psnr2 = peak_signal_noise_ratio(img0, blur2)
+print(psnr2)
+psnr3 = peak_signal_noise_ratio(img0, blur3)
+print(psnr3)
